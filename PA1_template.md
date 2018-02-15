@@ -9,13 +9,10 @@ output:
 
 ## Loading and preprocessing the data
 
-``` {r include=FALSE, echo = FALSE}
-# Set language to english
-Sys.setlocale(locale = "en_US.UTF-8")
-```
 
-```{r}
 
+
+```r
 # Loads dplyr package
 library(dplyr, warn.conflicts = FALSE)
 
@@ -33,7 +30,8 @@ data$date <- as.Date(data$date)
 ```
 
 ## What is mean total number of steps taken per day?
-```{r}
+
+```r
 # Groups the data by date and summarize the total steps as "total_steps"
 steps_per_day <- data %>%
   group_by(date) %>%
@@ -47,22 +45,28 @@ hist(steps_per_day$total_steps,
   col = "lightgreen")
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+
+```r
 steps_mean <- mean(steps_per_day$total_steps)
 steps_median <- median(steps_per_day$total_steps)
 ```
 
-```{r echo = FALSE}
-print(paste0("The mean total number of steps taken per day is ", steps_mean))
+
+```
+## [1] "The mean total number of steps taken per day is 10766.1886792453"
 ```
 
-```{r echo = FALSE}
-print(paste0("The median total number of steps taken per day is ", steps_median))
+
+```
+## [1] "The median total number of steps taken per day is 10765"
 ```
 
 
 ## What is the average daily activity pattern?
-```{r}
+
+```r
 # Groups the data by 5 minutes interval and summarize the average number of
 # steps taken in that interval
 interval_averages <- data %>%
@@ -78,12 +82,16 @@ plot(interval_averages$interval,
   main = "Average of steps per 5 min interval")
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
+
+```r
 max_number_of_steps_interval <- interval_averages$interval[which.max(interval_averages$avg_steps)]
 ```
 
-```{r echo = FALSE}
-print(paste0("The max average of steps occurred during interval ", max_number_of_steps_interval))
+
+```
+## [1] "The max average of steps occurred during interval 835"
 ```
 
 ## Imputing missing values
@@ -94,18 +102,21 @@ print(paste0("The max average of steps occurred during interval ", max_number_of
 
 1 - Report total NAs
 
-```{r}
+
+```r
 missing_data <- subset(raw_data, is.na(raw_data$steps))
 ```
 
-```{r echo = FALSE}
-print(paste0("There are ", nrow(missing_data), " rows with missing in the raw data file"))
+
+```
+## [1] "There are 2304 rows with missing in the raw data file"
 ```
 
 2 - Fill in NAs with the average number of steps during that 5 minutes interval
 over all days
 
-```{r}
+
+```r
 filled_data <- raw_data
 for (i in 1:nrow(filled_data)) {
     if (is.na(filled_data$steps[i])) {
@@ -122,7 +133,8 @@ filled_data$date <- as.Date(filled_data$date)
 
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r}
+
+```r
 # Groups the data by date and summarize the total steps as "total_steps"
 steps_per_day_2 <- filled_data %>%
   group_by(date) %>%
@@ -136,18 +148,23 @@ hist(steps_per_day_2$total_steps,
   col = "lightgreen")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
-```{r}
+
+
+```r
 filled_steps_mean <- mean(steps_per_day_2$total_steps)
 filled_steps_median <- median(steps_per_day_2$total_steps)
 ```
 
-```{r echo = FALSE}
-print(paste0("The mean total number of steps taken per day after filling NAs values is ", filled_steps_mean))
+
+```
+## [1] "The mean total number of steps taken per day after filling NAs values is 10766.1886792453"
 ```
 
-```{r echo = FALSE}
-print(paste0("The median total number of steps taken per day after filling NAs values is ", filled_steps_median))
+
+```
+## [1] "The median total number of steps taken per day after filling NAs values is 10766.1886792453"
 ```
 
 Imputing missing data made the mean and median equals. The mean value remains the same
@@ -157,7 +174,8 @@ while the median moved up a little (1,188679245).
 
 Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
-``` {r}
+
+```r
 filled_data$day_of_week <- weekdays(filled_data$date)
 filled_data$day_type <- "weekday"
 filled_data$day_type[filled_data$day_of_week %in% c("Saturday", "Sunday")] <- "weekend"
@@ -165,7 +183,8 @@ filled_data$day_type[filled_data$day_of_week %in% c("Saturday", "Sunday")] <- "w
 
 Calculates the average steps taken for weekdays and weekends.
 
-``` {r}
+
+```r
 # Group data by 5 minutes interval
 # Summarize the average number of steps in each interval
 data_day_avg <- filled_data %>%
@@ -175,7 +194,8 @@ data_day_avg <- filled_data %>%
 
 Make a plot
 
-``` {r}
+
+```r
 library(ggplot2)
 
 qplot(interval, avg_steps, data = data_day_avg,
@@ -185,3 +205,5 @@ qplot(interval, avg_steps, data = data_day_avg,
       main = "Average steps taken Weekends x Weekdays",
       facets = day_type ~ .)
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
